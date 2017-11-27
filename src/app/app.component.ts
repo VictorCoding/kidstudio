@@ -20,13 +20,10 @@ declare const MediaRecorder: any;
 export class AppComponent implements OnInit {
   @ViewChild('player')
   player;
-  @ViewChild('downloadLink')
-  downloadLink;
   mediaRecorder;
 
   ngOnInit() {
     const playerEl = this.player.nativeElement;
-    const downloadLink = this.downloadLink.nativeElement;
     const handleSuccess = (stream) => {
       this.mediaRecorder = new MediaRecorder(stream);
       this.mediaRecorder.ondataavailable = function(e) {
