@@ -4,6 +4,13 @@ declare const MediaRecorder: any;
 
 @Component({
   selector: 'app-root',
+  styles: [`
+    button {
+      width: 300px;
+      height: 300px;
+      font-size: 30pt;
+    }
+  `],
   template: `
     <audio #player controls></audio>
     <button (click)="stopRecording()">Stop</button>
@@ -13,38 +20,32 @@ declare const MediaRecorder: any;
 export class AppComponent implements OnInit {
   @ViewChild('player')
   player;
-  mediaRecorder = MediaRecorder;
-  chunks = [];
+  @ViewChild('downloadLink')
+  downloadLink;
+  mediaRecorder;
 
   ngOnInit() {
     const playerEl = this.player.nativeElement;
+    const downloadLink = this.downloadLink.nativeElement;
     const handleSuccess = (stream) => {
       this.mediaRecorder = new MediaRecorder(stream);
       this.mediaRecorder.ondataavailable = function(e) {
-        console.log('data availaable', e.data);
-        playerEl.controls = true;
-        const blob = new Blob([e.data], { 'type' : 'audio/ogg; codecs=opus' });
-        const audioURL = window.URL.createObjectURL(blob);
-        playerEl.src = audioURL;
-      };
-      this.mediaRecorder.start();
-
-      this.mediaRecorder.onstop = () => {
-        console.log('stopped mediarecorder');
+        const blob = new Blob([e.data], { 'type' : 'audio/wav' });
+        const audioUrl = window.URL.createObjectURL(blob);
+        playerEl.src = audioUrl;
       };
     };
 
-    navigator.mediaDevices.getUserMedia({ audio: true, video: false })
+    navigator.mediaDevices
+      .getUserMedia({ audio: true, video: false })
       .then(handleSuccess);
   }
 
   startRecording() {
-    console.log('start recording');
     this.mediaRecorder.start();
   }
 
   stopRecording() {
-    console.log('stop recording');
     this.mediaRecorder.stop();
   }
 }
